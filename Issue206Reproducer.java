@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -29,7 +30,9 @@ public class Issue206Reproducer {
 
         AtomicLong counter = new AtomicLong(0);
 
-        try (DuckDBConnection conn = DriverManager.getConnection("jdbc:duckdb:test.db").unwrap(DuckDBConnection.class)) {
+        Properties config = new Properties();
+        config.put("threads", numDbWorkerThreads);
+        try (DuckDBConnection conn = DriverManager.getConnection("jdbc:duckdb:test.db", config).unwrap(DuckDBConnection.class)) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.execute("CREATE TABLE tab1 (col1 BIGINT, col2 VARCHAR)");
             }
